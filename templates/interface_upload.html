@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agile & DevOps Resource Generator</title>
+
+    <!-- CSS SHEETS -->
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/interface.css')}}">
+
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/loading.css')}}">
+
+    <!-- Font Awesome -->
+    <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+    <link
+    href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+    rel="stylesheet"
+    />
+    <!-- MDB -->
+    <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.1/mdb.min.css"
+    rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/thinline.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <!-- Container wrapper -->
+        <div class="container-fluid">
+        <!-- Collapsible wrapper -->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <!-- Navbar brand -->
+            <a class="navbar-brand mt-2 mt-lg-0" href="#">
+            <img
+                src="../static/photos/nav_logo.png"
+                height="20"
+                alt="MDB Logo"
+            />
+            </a>
+            <!-- Left links -->
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Keyword & Text Mode</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/upload">Upload PDF Mode</a>
+                </li>
+            </ul>
+            <!-- Left links -->
+        </div>   
+    </nav>
+    <!-- Navbar -->
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center text-white">
+                <h1 class="display-1 mt-5">Agile & DevOps Resource Generator</h1>
+                <h4>Powered by OpenAI GPT3.5 Turbo Large Language Model</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="upload_div">
+        <div class="row">
+            <label id="form_label" class="form-label text-white">Upload PDF File Here: </label>
+        </div>
+        <form action="/upload_file_cs" method="POST" enctype="multipart/form-data" id="myForm" class="form">   
+            <input class="form-control form-control-lg mb-3" name='file' id="file" type="file" accept=".pdf">      
+            <div class="text-white">Enter In Your OpenAI API Key:</div>  
+            <input type="text" class="form-control form-control-lg mb-4" name="user_api_key" id="user_api_key">        
+            <button type="submit" class="btn btn-success" id="upload_file_cs" >Generate Case Study</button>
+            <button type="submit" class="btn btn-warning" id="upload_file_qa" formaction="/upload_file_qa">Generate Questions and Answers</button>
+            <button type="submit" class="btn btn-info" id="upload_file_csqa" formaction="/upload_file_csqa">Generate Case Study + Questions & Answers</button>
+        </form>
+    </div>
+
+    <!-- LOADER FOR WHEN FILE HAS UPLOADED -->
+
+    <div id="loader" class="text-center d-none">
+        <h1 class="fs-5 mt-5 text-white">File Uploaded Successfully! Generating Case Study, Questions and Answers Now...</h1>
+        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    </div>
+
+
+
+    <!-- <div class="container my-5">
+        <div class="row text-white mb-2">
+            <div class="col-1">Case Study:</div>
+            <div class="col-2">
+                <button type="button" id="copycs" class="btn btn-sm btn-primary btn-rounded">Copy Text</button>
+            </div>
+            
+        </div>
+        <div class="row">
+            <div class="col mx-auto text-center">
+                <textarea name="" readonly id="cstext" cols="158" rows="5"></textarea>
+            </div>
+        </div>
+        <div class="row text-white my-2">
+            <div class="col-1">Questions:</div>
+            <div class="col-2">
+                <button type="button" id="copyqn" class="btn btn-sm btn-primary btn-rounded">Copy Text</button>
+            </div>
+            <div class="col-3"></div>
+            <div class="col-1">Answers:</div>
+            <div class="col-2">
+                <button type="button" id="copyans" class="btn btn-sm btn-primary btn-rounded">Copy Text</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col text-center">
+                <textarea readonly name="" id="qtext" cols="76" rows="5"></textarea>
+            </div>
+            <div class="col text-center">
+                <textarea readonly name="" id="atext" cols="76" rows="5"></textarea>
+            </div>
+        </div>
+    </div> -->
+
+    <!-- MDB -->
+    <script
+        type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.1/mdb.min.js"
+    ></script>
+
+    <script src="{{url_for('static', filename='js/interface.js')}}"></script>
+    <script src="{{url_for('static', filename='js/generate.js')}}"></script>
+    <script src="{{url_for('static', filename='js/copy_text.js')}}"></script>
+    <script src="{{url_for('static', filename='js/manual_input.js')}}"></script>
+    <script src="{{url_for('static', filename='js/upload.js')}}"></script>
+        
+</body>
+</html>

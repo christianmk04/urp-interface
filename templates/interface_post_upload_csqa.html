@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agile & DevOps Resource Generator</title>
+
+    <!-- CSS SHEETS -->
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/interface.css')}}">
+
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/loading.css')}}">
+
+    <!-- Font Awesome -->
+    <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+    <link
+    href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+    rel="stylesheet"
+    />
+    <!-- MDB -->
+    <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.1/mdb.min.css"
+    rel="stylesheet"
+    />
+
+
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <!-- Container wrapper -->
+        <div class="container-fluid">
+        <!-- Collapsible wrapper -->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <!-- Navbar brand -->
+            <a class="navbar-brand mt-2 mt-lg-0" href="#">
+            <img
+                src="../static/photos/nav_logo.png"
+                height="20"
+                alt="MDB Logo"
+                loading="lazy"
+            />
+            </a>
+            <!-- Left links -->
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Keyword & Text Mode</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/upload">Upload PDF Mode</a>
+                </li>
+            </ul>
+            <!-- Left links -->
+        </div>   
+    </nav>
+    <!-- Navbar -->
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center text-white">
+                <h1 class="display-1 mt-5">Agile & DevOps Resource Generator</h1>
+                <h4>Powered by OpenAI GPT3.5 Turbo Large Language Model</h4>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOADER FOR WHEN REGENERATING -->
+
+    <div id="loader" class="text-center d-none">
+        <h1 class="fs-5 mt-5 text-white">Regenerating Case Study, Questions and Answers Now...</h1>
+        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    </div>
+    
+
+    <div class="container mt-5" id="content_div">
+        <div class="row text-white mb-2">
+            <div class="col-1">Case Study:</div>
+            <div class="col-2">
+                <button type="button" id="copycs" class="btn btn-sm btn-primary btn-rounded">Copy Text</button>
+            </div>
+            
+        </div>
+        <div class="row">
+            <div class="col mx-auto text-center">
+                <textarea name="" readonly id="cstext" cols="158" rows="15">{{cs_output}}</textarea>
+            </div>
+        </div>
+        <div class="row text-white my-2">
+            <div class="col-1">Questions:</div>
+            <div class="col-2">
+                <button type="button" id="copyqn" class="btn btn-sm btn-primary btn-rounded">Copy Text</button>
+            </div>
+            <div class="col-3"></div>
+            <div class="col-1">Answers:</div>
+            <div class="col-2">
+                <button type="button" id="copyans" class="btn btn-sm btn-primary btn-rounded">Copy Text</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col text-center">
+                <textarea readonly name="" id="qtext" cols="76" rows="15">{{q_output}}</textarea>
+            </div>
+            <div class="col text-center">
+                <textarea readonly name="" id="atext" cols="76" rows="15">{{a_output}}</textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="d-flex justify-content-center my-5">
+            <button type="button" id="regenerate" class="btn btn-info btn-rounded">Regenerate Output</button>
+            <a class="btn btn-rounded btn-danger" href="/upload">Upload New PDF</a>
+
+
+            <!-- <button type="button" id="csgenerate" class="btn btn-success btn-rounded">Generate </br> Case Study</button> -->
+            <!-- <button type="button" id="csqagenerate" class="btn btn-info btn-rounded">Generate Related </br> Questions & Answers</button>
+            <button type="button" id="qagenerate" class="btn btn-warning btn-rounded">Generate Independent </br> Questions & Answers</button>
+            <button type="button" id="reset" class="btn btn-danger btn-rounded">Clear </br> Content</button> -->
+        </div>
+    </div>
+
+    <!-- MDB -->
+    <script
+        type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.1/mdb.min.js"
+    ></script>
+
+    <script src="{{url_for('static', filename='js/interface.js')}}"></script>
+    <script src="{{url_for('static', filename='js/generate.js')}}"></script>
+    <script src="{{url_for('static', filename='js/copy_text.js')}}"></script>
+    <script src="{{url_for('static', filename='js/manual_input.js')}}"></script>
+    <script src="{{url_for('static', filename='js/regenerate.js')}}"></script>
+        
+</body>
+</html>
