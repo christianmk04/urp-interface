@@ -1,2 +1,2 @@
-web: python chatpdf.py
-web: python mongo.py
+web: gunicorn chatpdf:app
+web: gunicorn mongo:app
