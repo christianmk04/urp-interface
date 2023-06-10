@@ -1,2 +1,2 @@
-"web: gunicorn chatpdf:app" 
-"web: gunicorn mongo:app"
+web: gunicorn chatpdf:app
+web: gunicorn mongo:app
