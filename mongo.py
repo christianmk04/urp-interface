@@ -1,6 +1,5 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from os import environ
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 import json
@@ -8,7 +7,6 @@ import pymongo
 import gridfs
 
 app = Flask(__name__)
-
 CORS(app)
 
 # CONNECT TO MONGO
@@ -58,9 +56,9 @@ def qa_formatter(question_arr, answer_arr):
     return [modified_qn_arr, modified_ans_arr]
 
 
-# FIND ALL CASE STUDIES
-@app.route("/case_studies/<string:mode>/<string:main_topic>/<string:sub_topic>", methods=['GET'])
-def get_all_case_studies(mode, main_topic, sub_topic):
+# FIND CASE STUDY BASED ON MODE, MAIN TOPIC AND SUB TOPIC
+@app.route("/get_case_study/<string:mode>/<string:main_topic>/<string:sub_topic>", methods=['GET'])
+def get_case_study(mode, main_topic, sub_topic):
 
     newList = []
 
@@ -95,7 +93,7 @@ def get_all_case_studies(mode, main_topic, sub_topic):
 
 # FIND INDEPENDENT QUESTIONS AND ANSWERS BASED ON MODE AND SUB TOPIC
 
-@app.route("/ind_questions/<string:mode>/<string:sub_topic>", methods=['GET'])
+@app.route("/get_ind_questions/<string:mode>/<string:sub_topic>", methods=['GET'])
 def get_ind_questions(mode, sub_topic):
 
     newList = []
@@ -125,8 +123,7 @@ def get_ind_questions(mode, sub_topic):
     })
 
 # FIND CASE STUDY AND RELATED QUESTIONS AND ANSWERS - USE THE MODE, MAIN TOPIC AND SUB TOPIC (AS KEYS) TO FIND THE CASE STUDY AND RELATED QUESTIONS AND ANSWERS
-
-@app.route("/case_study_qa/<string:mode>/<string:main_topic>/<string:sub_topic>", methods=['GET'])
+@app.route("/get_csqa/<string:mode>/<string:main_topic>/<string:sub_topic>", methods=['GET'])
 def get_csqa(mode, main_topic, sub_topic):
 
     case_studies = reference_cs_collection.find()
@@ -156,23 +153,25 @@ def get_csqa(mode, main_topic, sub_topic):
     q_json_data = json.loads(q_json_data)
 
     quesList = []
+    answersList = []
 
     for data in q_json_data:
         if data["case_study"] == curr_case_study_id:
             quesList.append(data["question"])
+            answersList.append(data["answer"])
     
     return jsonify(
         {
             "code" : 200,
             "message" : "Success",
             "case_study" : curr_case_study,
-            "questions" : quesList
+            "questions" : quesList,
+            "answers" : answersList
     })
 
 # UPLOAD GENERATED CS INTO DATABASE
-
-@app.route("/create_cs", methods=['POST'])
-def create_cs():
+@app.route("/upload_cs", methods=['POST'])
+def upload_cs():
     input_data = request.get_json()
 
     new_cs = {
@@ -201,9 +200,8 @@ def create_cs():
     )
 
 # FUNCTION TO UPLOAD QUESTIONS AND ANSWERS FOR ALREADY GENERATED AND SAVED CASE STUDY
-
-@app.route("/create_qa_for_cs", methods=['POST'])
-def create_csqa():
+@app.route("/upload_qa_for_cs", methods=['POST'])
+def upload_qa_for_cs():
     input_data = request.get_json()
 
     # Obtain the id of the existing case study
@@ -218,6 +216,8 @@ def create_csqa():
     question_arr = input_data["questions"].split("\n")
     answer_arr = input_data["answers"].split("\n")
 
+    print(question_arr)
+    print(answer_arr)
 
     # FORMAT THE QUESTIONS IN THE QUESTIONS & ANSWER ARRAYS
     modified_arrays = qa_formatter(question_arr, answer_arr)
@@ -244,7 +244,7 @@ def create_csqa():
                         "message" : "Error while inserting data"
                     }
                 )
-    elif mode == "manual":
+    elif mode == "manual" or mode == "api_call":
         for i in range(len(modified_qn_arr)):
             new_csqa = {
                 "case_study" : cs_id,
@@ -272,9 +272,9 @@ def create_csqa():
         }
     )
 
-# FUNCTION TO UPLOAD INDIVIDUAL QUESTIONS AND ANSWERS TO DB
-@app.route("/create_ind_qa", methods=['POST'])
-def create_ind_qa():
+# FUNCTION TO UPLOAD INDEPENDENT QUESTIONS AND ANSWERS TO DB
+@app.route("/upload_ind_qa", methods=['POST'])
+def upload_ind_qa():
     input_data = request.get_json()
 
     mode = input_data["mode"]
@@ -305,7 +305,7 @@ def create_ind_qa():
                         "message" : "Error while inserting data"
                     }
                 )
-    elif mode == "manual":
+    elif mode == "manual" or mode == "api_call":
         for i in range(len(modified_qn_arr)):
             new_qa = {
                 "mode" : mode,

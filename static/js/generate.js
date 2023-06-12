@@ -178,7 +178,7 @@ function generate_cs() {
     var sub_topic = items[1];
     var API_KEY = items[2];
 
-    var mongo_cs_gen_end_point = `http://localhost:5001/case_studies/${curr_mode}/${main_topic}/${sub_topic}`;
+    var mongo_cs_gen_end_point = `http://localhost:5001/get_case_study/${curr_mode}/${main_topic}/${sub_topic}`;
     var mongo_cs = ""
 
     // TO SHOW LOADING ANIMATION
@@ -241,7 +241,7 @@ function generate_qa() {
 
     window.scrollTo({top: 0, behavior: 'smooth'})
 
-    var mongo_end_point = `http://localhost:5001/ind_questions/${curr_mode}/${sub_topic}`;
+    var mongo_end_point = `http://localhost:5001/get_ind_questions/${curr_mode}/${sub_topic}`;
 
     fetch(mongo_end_point)
     .then(response => response.json())
@@ -303,7 +303,7 @@ function generate_csqa() {
 
         window.scrollTo({top: 0, behavior: 'smooth'})
 
-        var mongo_end_point = `http://localhost:5001/case_study_qa/${curr_mode}/${main_topic}/${sub_topic}`;
+        var mongo_end_point = `http://localhost:5001/get_csqa/${curr_mode}/${main_topic}/${sub_topic}`;
 
         fetch(mongo_end_point)
         .then(response => response.json())
@@ -392,7 +392,7 @@ function upload_cs() {
         sub_topic: sub_topic
     });
 
-    var mongo_end_point = `http://localhost:5001/create_cs`;
+    var mongo_end_point = `http://localhost:5001/upload`;
 
     fetch(mongo_end_point, 
         {
@@ -434,7 +434,7 @@ function upload_csqa() {
         sub_topic: sub_topic
     });
 
-    var mongo_end_point = `http://localhost:5001/create_qa_for_cs`;
+    var mongo_end_point = `http://localhost:5001/upload_qa_for_cs`;
 
     fetch(mongo_end_point, 
         {
@@ -473,7 +473,7 @@ function upload_ind_qa() {
         sub_topic: sub_topic
     });
 
-    var mongo_end_point = `http://localhost:5001/create_ind_qa`;
+    var mongo_end_point = `http://localhost:5001/upload_ind_qa`;
 
     fetch(mongo_end_point, 
         {
