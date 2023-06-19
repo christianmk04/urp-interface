@@ -497,6 +497,7 @@ function reset_all() {
     cstext.innerHTML = "";
     qtext.innerHTML = "";
     atext.innerHTML = "";
+    generated_cs = false;
     reset_messages();
 }
 
