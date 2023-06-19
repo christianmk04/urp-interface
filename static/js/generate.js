@@ -189,6 +189,11 @@ function generate_cs() {
 
     window.scrollTo({top: 0, behavior: 'smooth'})
 
+    document.getElementById("csgenerate").disabled = true;
+    document.getElementById("csqagenerate").disabled = true;
+    document.getElementById("qagenerate").disabled = true;
+    document.getElementById("reset").disabled = true;
+
     fetch(mongo_cs_gen_end_point)
     .then(response => response.json())
     .then(data => {
@@ -212,6 +217,11 @@ function generate_cs() {
     .then(() => {
         // STOP LOADER FROM SHOWING
         document.getElementById("loader").setAttribute("class" ,"text-center d-none");
+
+        document.getElementById("csgenerate").disabled = false;
+        document.getElementById("csqagenerate").disabled = false;
+        document.getElementById("qagenerate").disabled = false;
+        document.getElementById("reset").disabled = false;
     })
     .then(() => upload_cs())
     .catch(err => {
@@ -240,6 +250,11 @@ function generate_qa() {
     document.getElementById("loader").getElementsByTagName("h1")[0].innerHTML = `Generating Questions for ${sub_topic} under ${main_topic}, please wait for a moment...`;
 
     window.scrollTo({top: 0, behavior: 'smooth'})
+
+    document.getElementById("csgenerate").disabled = true;
+    document.getElementById("csqagenerate").disabled = true;
+    document.getElementById("qagenerate").disabled = true;
+    document.getElementById("reset").disabled = true;
 
     var mongo_end_point = `http://localhost:5001/get_ind_questions/${curr_mode}/${sub_topic}`;
 
@@ -272,6 +287,11 @@ function generate_qa() {
     .then(() => {
         // STOP LOADER FROM SHOWING
         document.getElementById("loader").setAttribute("class" ,"text-center d-none");
+
+        document.getElementById("csgenerate").disabled = false;
+        document.getElementById("csqagenerate").disabled = false;
+        document.getElementById("qagenerate").disabled = false;
+        document.getElementById("reset").disabled = false;
     })
     .then(() => upload_ind_qa())
     .catch(err => {
@@ -302,6 +322,11 @@ function generate_csqa() {
         document.getElementById("loader").getElementsByTagName("h1")[0].innerHTML = `Generating Questions for ${sub_topic} under ${main_topic} for the case study. Please wait for a moment...`;
 
         window.scrollTo({top: 0, behavior: 'smooth'})
+
+        document.getElementById("csgenerate").disabled = true;
+        document.getElementById("csqagenerate").disabled = true;
+        document.getElementById("qagenerate").disabled = true;
+        document.getElementById("reset").disabled = true;
 
         var mongo_end_point = `http://localhost:5001/get_csqa/${curr_mode}/${main_topic}/${sub_topic}`;
 
@@ -358,6 +383,11 @@ function generate_csqa() {
         .then(() => {
             // STOP LOADER FROM SHOWING
             document.getElementById("loader").setAttribute("class" ,"text-center d-none");
+
+            document.getElementById("csgenerate").disabled = false;
+            document.getElementById("csqagenerate").disabled = false;
+            document.getElementById("qagenerate").disabled = false;
+            document.getElementById("reset").disabled = false;
         })
         .then(() => upload_csqa())
         .catch(err => {
@@ -497,6 +527,7 @@ function reset_all() {
     cstext.innerHTML = "";
     qtext.innerHTML = "";
     atext.innerHTML = "";
+    generated_cs = false
     reset_messages();
 }
 

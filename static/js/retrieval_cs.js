@@ -55,6 +55,9 @@ function showAllCS() {
 
             for (let index = 0; index < main_topic_split.length; index++) {
                 var element = main_topic_split[index];
+
+                element = element.trim();
+
                 if (!main_filter_check_arr.includes(element)) {
                     main_filter_check_arr.push(element);
                     main_filter_list_str += 
@@ -71,6 +74,8 @@ function showAllCS() {
                 if (element.substring(0,3) == "and") {
                     element = element.substring(4, element.length)
                 }
+
+                element = element.trim();
 
                 if (!sub_filter_check_arr.includes(element)) {
                     sub_filter_check_arr.push(element);
@@ -118,7 +123,7 @@ function load_cs_list(selected_case_studies) {
         
         `
     }
-    document.getElementById("case_study_list").innerHTML = list_temp_str;
+    document.getElementById("case_study_listCS").innerHTML = list_temp_str;
 }
 
 // FILTER CASE STUDIES

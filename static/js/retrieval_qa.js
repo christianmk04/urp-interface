@@ -57,6 +57,8 @@ function showAllQA() {
                     element = element.substring(4, element.length)
                 }
 
+                element = element.trim()
+
                 if (!topic_filter_check_arr.includes(element)) {
                     topic_filter_check_arr.push(element);
                     topic_filter_list_str += 
