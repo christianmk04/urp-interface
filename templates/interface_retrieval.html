@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agile & DevOps Resource Generator</title>
+
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/interface.css')}}">
+
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/loading.css')}}">
+
+
+    <!-- Font Awesome -->
+    <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+    <link
+    href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+    rel="stylesheet"
+    />
+    <!-- MDB -->
+    <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.1/mdb.min.css"
+    rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/thinline.css">
+
+    <style>
+
+        .badge{
+            transition: background-color 0.2s ease-out 50ms;
+        }
+
+        .badge:hover{
+            background-color: royalblue;
+            color: aliceblue;
+        }
+
+    </style>
+
+</head>
+<body id="main_body">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <!-- Container wrapper -->
+        <div class="container-fluid">
+        <!-- Collapsible wrapper -->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <!-- Navbar brand -->
+            <a class="navbar-brand mt-2 mt-lg-0" href="#">
+            <img
+                src="../static/photos/nav_logo.png"
+                height="20"
+                alt="MDB Logo"
+            />
+            </a>
+            <!-- Left links -->
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Keyword & Text Mode</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/upload">Upload PDF Mode</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/retrieval">Retrieve Resources</a>
+                </li>
+            </ul>
+            <!-- Left links -->
+        </div>   
+    </nav>
+    <!-- Navbar -->`
+
+    <div class="container">
+
+        <div class="row text-center text-white">
+            <h1 class="display-1 mt-5">Agile & DevOps Resource Generator</h1>
+            <h4>Powered by OpenAI GPT3.5 Turbo Large Language Model</h4>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-6 text-center">
+                <p class="text-white fs-5 mt-3">Select Resource Type:</p>
+                <div class="btn-group" id="resource_type">
+                    <input type="radio" class="btn-check" name="main" id="retrieve_cs" checked />
+                    <label class="btn btn-info" for="retrieve_cs">Case Study</label>
+
+                    <input type="radio" class="btn-check" name="main" id="retrieve_qa"/>
+                    <label class="btn btn-secondary" for="retrieve_qa">Q&A (Independent)</label>
+
+                    <input type="radio" class="btn-check" name="main" id="retrieve_csqa"/>
+                    <label class="btn btn-secondary" for="retrieve_csqa">Case Study & Related Q&A</label>
+                </div>
+            </div> 
+
+            <div class="col-6 text-center">
+                <p class="text-white fs-5 mt-3" id="sub_topic_label">Select Resource Classification:</p>
+                <div class="btn-group" id="resource_class">
+                    <input type="radio" class="btn-check" name="main1" id="ref_rec" checked />
+                    <label class="btn btn-sm btn-primary" for="ref_rec">Reference/Template Resources</label>
+
+                    <input type="radio" class="btn-check" name="main1" id="generated_rec"/>
+                    <label class="btn btn-sm btn-secondary" for="generated_rec">Generated Resources (Keyword & Text)</label>
+
+                    <input type="radio" class="btn-check" name="main1" id="generated_rec_pdf"/>
+                    <label class="btn btn-sm btn-secondary" for="generated_rec_pdf">Generated Resources (PDF)</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row my-5">
+            <div class="col-3"></div>
+            <div class="col-6 text-center">
+                <button id="retrieve_form" class="btn btn-lg btn-success" onclick="showResources()">Retrieve Resources!</button>
+            </div>
+            <div class="col-3"></div>
+        </div>
+    </div>
+
+    <!-- COMPONENT FOR CASE STUDIES & RELATED QUESTIONS AND ANSWERS-->
+    <div class="container my-5 d-none" id="all_CS_component">
+        <div class="row">
+            <div class="col-6">
+                <h1 class="text-center text-white">Case Studies:</h1>
+
+                <div class="row mb-4">
+                    <div class="col-3">
+                        <div class="dropdown">
+                            <select class="form-select form-select-sm" id="main_topic_dropdown_CS">
+                                <option value="all" selected>Filter Main Topic...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="dropdown px-2">
+                            <select class="form-select form-select-sm" id="sub_topic_dropdown_CS">
+                                <option value="all" selected>Filter Sub-Topic...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <button class="btn btn-sm btn-info" onclick="filterCS()">Filter Items</button>
+                    </div>
+                    <div class="col-2">
+                        <button class="btn btn-sm btn-warning" onclick="resetFilterCS()">Reset Filters</button>
+                    </div>
+                </div>
+                
+                <ol class="list-group list-group-light list-group-numbered" id="case_study_listCS"></ol>
+            </div>
+            <div class="col">
+                <div style="position: sticky; top: 0;">
+                    <h1 class="text-center text-white">View Full Case Study:</h1>
+
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="text-center mt-2 mb-4">
+                                <button class="btn btn-sm btn-info" id="update_cs" onclick="updateCS(-1)">Update Case Study</button>
+                                <button class="btn btn-sm btn-warning" id="reset_cs" onclick="resetCS(-1)">Reset Changes</button>
+                                <button class="btn btn-sm btn-danger" onclick="clearCS()">Clear</button>
+                            </div>
+                        </div>
+                        <div class="col-4 mt-2">
+                            <div class="form-check form-switch bg-secondary rounded-5 text-white">
+                                <input class="form-check-input" type="checkbox" role="switch" value="view" onclick="changeModeCS(this)"/>
+                                <label class="form-check-label" for="modetoggle" id="retrieve_CS_label">Viewing Mode</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <span class="text-white">Main Topic</span>
+                    <div class="form-outline border rounded-1 bg-white mb-3">
+                        <input disabled type="text" id="cs_main_topic" class="form-control"/>
+                    </div>
+
+                    <span class="text-white">Sub-Topic</span>
+                    <div class="form-outline border rounded-1 bg-white mb-3">
+                        <input disabled type="text" id="cs_sub_topic" class="form-control"/>
+                    </div>
+
+                    <span class="text-white">Case Study:</span>
+                    <div class="form-outline bg-white border rounded-1">
+                        <textarea disabled class="form-control" id="case_study_textarea" rows="10"></textarea>
+                    </div>
+
+
+                    <form action="http://localhost:5000/retrieval_csqa">
+                        <input type="hidden" name="cs_id" id="cs_id">
+                        <input type="hidden" name="cs_classification" id="cs_classification">
+                        <button disabled ="submit" id="edit_csqa_button" class="btn btn-lg btn-success mt-3">View and Edit Related QA</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- COMPONENT FOR IND QA -->
+    <div class="container my-5 d-none" id="all_indQA_component">
+        <div class="row">
+            <div class="col">
+                <h1 class="text-center text-white">Questions & Answers List:</h1>
+
+                <div class="row mb-4">
+                    <div class="col-7">
+                        <div class="dropdown">
+                            <select class="form-select form-select-sm" id="qa_topic_dropdown">
+                                <option value="all" selected>Filter Topic...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-1"></div>
+                    <div class="col-2 text-center">
+                        <button class="btn btn-sm btn-info" onclick="filterQA()">Filter Items</button>
+                    </div>
+                    <div class="col-2 text-center">
+                        <button class="btn btn-sm btn-warning" onclick="resetFilterQA()">Reset Filters</button>
+                    </div>
+                </div>
+
+                <ol class="list-group list-group-light list-group-numbered" id="qa_list"></ol>
+            </div>
+            <div class="col"> 
+                <div style="position: sticky; top: 0;">
+                    <h1 class="text-center text-white">Edit Questions & Answers</h1>
+
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="text-center my-3">
+                                <button class="btn btn-sm btn-info" id="update_qa" onclick="updateQA(-1)">Update Details</button>
+                                <button class="btn btn-sm btn-warning" id="reset_qa" onclick="resetQA(-1)">Reset Changes</button>
+                                <button class="btn btn-sm btn-danger" id="clear_qa" onclick="clearQA()">Clear Fields</button>
+                            </div>
+                        </div>
+                        <div class="col-4 mt-3">
+                            <div class="form-check form-switch bg-secondary rounded-5 text-white">
+                                <input class="form-check-input" type="checkbox" role="switch" value="view" onclick="changeModeQA(this)"/>
+                                <label class="form-check-label" for="modetoggle" id="retrieve_QA_label">Viewing Mode</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-outline mt-2">
+                        <span class="text-white">Question/Answer Pair Topic:</span>
+                        <div class="form-outline bg-white border rounded-1">
+                            <input type="text" id="ind_qa_topic" class="form-control" disabled/>
+                        </div>
+                        
+                        <div class="my-4">
+                            <span class="text-white">Question:</span>
+                            <div class="form-outline bg-white border rounded-1">
+                                <textarea id="ind_qa_ques" class="form-control" disabled/></textarea>
+                            </div>
+                        </div>
+                        
+                        
+                        <span class="text-white">Answer:</span>
+                        <div class="form-outline bg-white border rounded-1">
+                            <textarea id="ind_qa_ans" class="form-control" rows="10" disabled/></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+   
+
+
+    <script>            
+        
+        
+        
+
+    </script>
+
+    <!-- MDB -->
+    <script
+        type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.1/mdb.min.js"
+    ></script>
+
+    <script src="{{url_for('static', filename='js/retrieval_interface.js')}}"></script>
+    <script src="{{url_for('static', filename='js/retrieval_cs.js')}}"></script>
+    <script src="{{url_for('static', filename='js/retrieval_qa.js')}}"></script>
+</body>
+</html>

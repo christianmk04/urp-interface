@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agile & DevOps Resource Generator</title>
+
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/interface.css')}}">
+
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/loading.css')}}">
+
+
+    <!-- Font Awesome -->
+    <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+    <link
+    href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+    rel="stylesheet"
+    />
+    <!-- MDB -->
+    <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.1/mdb.min.css"
+    rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/thinline.css">
+
+    <style>
+
+        .badge{
+            transition: background-color 0.2s ease-out 50ms;
+        }
+
+        .badge:hover{
+            background-color: royalblue;
+            color: aliceblue;
+        }
+
+    </style>
+
+</head>
+<body>
+     <!-- Navbar -->
+     <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <!-- Container wrapper -->
+        <div class="container-fluid">
+        <!-- Collapsible wrapper -->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <!-- Navbar brand -->
+            <a class="navbar-brand mt-2 mt-lg-0" href="#">
+            <img
+                src="../static/photos/nav_logo.png"
+                height="20"
+                alt="MDB Logo"
+            />
+            </a>
+            <!-- Left links -->
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Keyword & Text Mode</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/upload">Upload PDF Mode</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/retrieval">Retrieve Resources</a>
+                </li>
+            </ul>
+            <!-- Left links -->
+        </div>   
+    </nav>
+    <!-- Navbar -->`
+
+    <div class="container">
+        <div class="row text-center text-white">
+            <h1 class="display-1 mt-5">Agile & DevOps Resource Generator</h1>
+            <h4>Powered by OpenAI GPT3.5 Turbo Large Language Model</h4>
+        </div>
+        
+        <div class="text-center">
+            <form action="http://localhost:5000/retrieval">
+                <button class="btn btn-primary btn-lg" type="submit">Go Back</button>
+            </form>
+        </div>
+        
+
+    </div>
+
+    <div class="container my-5" id="all_CS_component">
+        <div class="row">
+            <div class="col">
+                <h5 class="text-white">Content:</h5>
+                <div class="form-outline bg-white border rounded-1">
+                    <textarea disabled class="form-control" id="case_study_textarea" rows="10"></textarea>
+                </div>
+            </div>
+            <div class="col">
+                <h5 class="text-white">Main Topic:</h5>
+                <div class="form-outline border rounded-1 bg-white mb-5">
+                    <input disabled type="text" id="cs_main_topic" class="form-control"/>
+                </div>
+
+                <h5 class="text-white">Sub-Topic:</h5>
+                <div class="form-outline border rounded-1 bg-white mb-3">
+                    <input disabled type="text" id="cs_sub_topic" class="form-control"/>
+                </div>        
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col">
+
+                <h5 class="text-white mt-5">Related Questions & Answers</h5>
+                <ol class="list-group list-group-light list-group-numbered" id="qa_list"></ol>
+
+                <div id="no_qa_show_div" class="text-center text-white d-none">
+                    <h3 class="m-5">No questions and answers generated for this case study</h3>
+                </div>
+            </div>
+
+            <div class="col"> 
+                <div style="position: sticky; top: 0;">
+                    <h5 class="text-center text-white">Edit Questions & Answers</h5>
+
+                    <div class="row">
+                        <div class="text-center my-3">
+                            <button class="btn btn-sm btn-info" id="update_qa" onclick="updateQA(-1)">Update Details</button>
+                            <button class="btn btn-sm btn-warning" id="reset_qa" onclick="resetQA(-1)">Reset Changes</button>
+                            <button class="btn btn-sm btn-danger" id="clear_qa" onclick="clearQA()">Clear Fields</button>
+                        </div>
+                    </div>
+
+                    <div class="form-outline mt-2">
+                        <span class="text-white">Question/Answer Pair Main Topic:</span>
+                        <div class="form-outline bg-white border rounded-1">
+                            <input type="text" id="csqa_main_topic" class="form-control"/>
+                        </div>
+
+                        <div class="my-4">
+                            <span class="text-white">Question/Answer Pair Sub-Topic:</span>
+                            <div class="form-outline bg-white border rounded-1">
+                                <input type="text" id="csqa_sub_topic" class="form-control"/>
+                            </div>
+                        </div>
+                        
+                        
+                        <div class="my-4">
+                            <span class="text-white">Question:</span>
+                            <div class="form-outline bg-white border rounded-1">
+                                <textarea id="csqa_ques" class="form-control"/></textarea>
+                            </div>
+                        </div>
+                        
+                        
+                        <span class="text-white">Answer:</span>
+                        <div class="form-outline bg-white border rounded-1">
+                            <textarea id="csqa_ans" class="form-control" rows="10"/></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MDB -->
+    <script
+        type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.1/mdb.min.js"
+    ></script>
+
+    <script src="{{url_for('static', filename='js/retrieval_csqa.js')}}"></script>
+
+</body>
+</html>

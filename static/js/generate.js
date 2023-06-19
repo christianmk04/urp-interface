@@ -103,7 +103,7 @@ async function fetchData(resource, API_KEY) {
             "role" : "assistant", "content" : data.choices[0].message.content
         })
         messages.push({
-            "role" : "user", "content" : "Please provide the answers to these questions. Keep each answer to 50 words. Follow the same sequencing when you answer the questions. Skip pleasantries of greetings and salutations and immediately provide the answers."
+            "role" : "user", "content" : "Please provide the answers to these questions. Keep each answer to 50 words. Follow the same sequencing when you answer the questions. Skip pleasantries of greetings and salutations and immediately provide the answers, meaning do not start with 'Sure, here are the answers to the questions ... ' "
         })
     }
     else if (resource == "a"){
@@ -261,7 +261,7 @@ function generate_qa() {
 
         messages[2].content = prompt_qns;
 
-        messages[3].content = `Please write 10 questions for ${main_topic} that has aspects of ${sub_topic} that uses same/similar concepts, aspects and tools that were mentioned in the previous generated questions. Generate the questions in the same format as how you had previously generated the questions. Skip the pleasantries of acknowledging the request and just provide the questions straight. Do not start of with a greeting or salutation. `;
+        messages[3].content = `Please write 10 questions for ${main_topic} that has aspects of ${sub_topic} that uses same/similar concepts, aspects and tools that were mentioned in the previous generated questions. Generate the questions in the same format as how you had previously generated the questions. Skip the pleasantries of acknowledging the request and just provide the questions straight. Do not start of with a greeting or salutation, meaning do not start off with "Sure, here are 10 quiz questions..." or "Sure, here are 10 more quiz questions...". `;
     })
     .then(() => fetchData("q", API_KEY))
     .then(() => {
@@ -392,7 +392,7 @@ function upload_cs() {
         sub_topic: sub_topic
     });
 
-    var mongo_end_point = `http://localhost:5001/upload`;
+    var mongo_end_point = `http://localhost:5001/upload_cs`;
 
     fetch(mongo_end_point, 
         {

@@ -8,6 +8,12 @@ from fileinput import filename
 app = Flask(__name__)
 CORS(app)
 
+##################################################################################################################################################################################################
+##################################################################################################################################################################################################
+##################################################################################################################################################################################################
+'''
+FUNCTIONS HERE ARE TO BE USED FOR RENDERING OF THE DIFFERENT HTML PAGES OF THE INTERFACE
+'''
 
 # RENDER KEYWORD AND TEXT INPUT PAGE
 @app.route('/')
@@ -19,7 +25,19 @@ def main_text():
 def main_upload():
     return render_template('interface_upload.html')
 
+# RENDER RETRIEVAL PAGE FOR SELECTION
+@app.route('/retrieval')
+def main_retrieval_page():
+    return render_template('interface_retrieval.html')
 
+# RENDER PAGE TO EDIT CS AND RELATED QA
+@app.route('/retrieval_csqa')
+def main_retrieval_csqa_page():
+    return render_template('retrieval_csqa.html')
+
+##################################################################################################################################################################################################
+##################################################################################################################################################################################################
+##################################################################################################################################################################################################
 
 # IMPORT LANGCHAIN DEPENDENCIES
 from PyPDF2 import PdfReader
@@ -36,7 +54,34 @@ import openai
 import requests
 import os 
 
-# FUNCTION TO DO THE PDF READING 
+##################################################################################################################################################################################################
+##################################################################################################################################################################################################
+##################################################################################################################################################################################################
+'''
+FUNCTIONS HERE ARE TO BE USED FOR GENERATION OF RESOURCES USING PDF FILES
+
+FUNCTIONS IN THIS SECTION INCLUDE:
+
+REUSABLE FUNCTION - PDF_READ 
+- USED TO READ THE PDF FILE AND GENERATE THE KNOWLEDGE BASE AND CHAIN FOR GENERATION OF CASE STUDY
+
+REUSABLE FUNCTION - UPLOAD_FILE_SKELETON
+- USED TO UPLOAD THE PDF FILE TO THE DB
+
+REUSABLE FUNCTION - UPLOAD_CS_SKELETON
+- USED TO UPLOAD THE GENERATED CASE STUDY TO THE DB
+
+FUNCTION - UPLOAD_CS
+- GENERATES CASE STUDY AND UPLOADS IT TO THE DB
+
+FUNCTION - UPLOAD_QA
+- GENERATES INDEPENDENT QA AND UPLOADS IT TO THE DB
+
+FUNCTION - UPLOAD_CSQA
+- GENERATES CASE STUDY AND RELATED QA AND UPLOADS IT TO THE DB
+'''
+
+# FUNCTION TO DO THE PDF READING - REUSABLE FUNCTION
 def pdf_read(uploaded_file):
     reader = PdfReader(uploaded_file)
 
@@ -62,7 +107,7 @@ def pdf_read(uploaded_file):
 
     return [chain, knowledge_base]
 
-# FUNCTION TO UPLOAD PDF FILE TO DB
+# FUNCTION TO UPLOAD PDF FILE TO DB - REUSABLE FUNCTION
 def upload_file_skeleton(file_to_upload, file_name):
     mongo_upload_endpoint = "http://localhost:5001/upload_pdf" + "/" + file_to_upload.filename
     try: 
@@ -76,10 +121,21 @@ def upload_file_skeleton(file_to_upload, file_name):
     return file_id
 
 # FUNCTION TO UPLOAD GENERATED CASE STUDY TO DB
-def upload_cs_skeleton(file_id, case_study_output):
+def upload_cs_skeleton(file_id, case_study_output, topics):
     mongo_upload_endpoint = "http://localhost:5001/upload_cs_for_pdf" + "/" + file_id
+
+    topic_split = topics.split("\n")
+    main_topic = topic_split[0].split(":")[1].strip()
+    sub_topics = topic_split[1].split(":")[1].strip()
+
+    case_study_output_json = {
+        "main_topic": main_topic,
+        "sub_topic": sub_topics,
+        "case_study": case_study_output
+    }
+
     try: 
-        response = requests.post(mongo_upload_endpoint, case_study_output)
+        response = requests.post(mongo_upload_endpoint, json=case_study_output_json)
         print("Successfully uploaded case study to DB")
         cs_id = response.text
     except Exception as e:
@@ -122,8 +178,13 @@ def upload_cs():
     cs_docs = knowledge_base.similarity_search(cs_query)
     cs_output = chain.run(input_documents=cs_docs,question=cs_query)
 
+    topic_query = f'Based on the contents in this file, can you identify the main topic of the file contents? The main topic should be a single word, and should be strictly either Agile or DevOps. Identify also, only 5 subtopics that are related to the main topic. The subtopics should be single words as well. \n\n Skip the pleasantries of acknowledging the user and start generating the topic immediately (Meaning, do not start with "Sure, here\'s the topic for..." or "Here\'s the topic for..."). Some examples of sub-topics include automation, continuous integration, continuous delivery, etc. Generate your response as follows in the example delimited by the double apostrophes: \n\n """ \n Main Topic: DevOps \n Sub-Topics: Automation, Continuous Integration, Continuous Delivery, Continuous Deployment, Continuous Testing"""'
+
+    topic_docs = knowledge_base.similarity_search(topic_query)
+    topic_output = chain.run(input_documents=topic_docs,question=topic_query)
+
     # UPLOAD CASE STUDY TO DB
-    upload_cs_skeleton(file_id, cs_output)
+    upload_cs_skeleton(file_id, cs_output, topic_output)
 
     return render_template('interface_post_upload_cs.html', cs_output=cs_output)
 
@@ -146,7 +207,6 @@ def upload_qa():
     # SET API KEY FOR GENERATION OF RESOURCE
 
     os.environ["OPENAI_API_KEY"] = user_api_key
-
     
     # UPLOAD FILE TO DB
     file_id = upload_file_skeleton(uploaded_file, uploaded_file.filename)
@@ -163,11 +223,23 @@ def upload_qa():
     a_docs = knowledge_base.similarity_search(ans_ind_query)
     a_output = chain.run(input_documents=a_docs,question=ans_ind_query)
 
+    topic_query = f'Based on the contents of the file, can you identify the main topic of the questions and answers? The main topic should be a single word, and should be strictly either Agile or DevOps. Identify also, only 5 subtopics that are related to the main topic. The subtopics should be single words as well. \n\n Skip the pleasantries of acknowledging the user and start generating the topic immediately (Meaning, do not start with "Sure, here\'s the topic for..." or "Here\'s the topic for..."). Some examples of sub-topics include automation, continuous integration, continuous delivery, etc. Generate your response as follows in the example delimited by the double apostrophes: \n\n """ \n Main Topic: DevOps \n Sub-Topics: Automation, Continuous Integration, Continuous Delivery, Continuous Deployment, Continuous Testing"""'
+
+    topic_docs = knowledge_base.similarity_search(topic_query)
+    topic_output = chain.run(input_documents=topic_docs,question=topic_query)
+
+    topic_split = topic_output.split("\n")
+    main_topic = topic_split[0].split(":")[1].strip()
+    sub_topics = topic_split[1].split(":")[1].strip()
+
+
     # UPLOAD QUESTIONS AND ANSWERS TO DB
     mongo_upload_endpoint = "http://localhost:5001/upload_qa_for_pdf" + "/" + file_id
     qa_json = {
         "questions": q_output,
-        "answers": a_output
+        "answers": a_output,
+        "main_topic": main_topic,
+        "sub_topic": sub_topics
     }
     try:
         response = requests.post(mongo_upload_endpoint, json=qa_json)
@@ -210,8 +282,13 @@ def upload_csqa():
     cs_docs = knowledge_base.similarity_search(cs_query)
     cs_output = chain.run(input_documents=cs_docs,question=cs_query)
 
+    topic_query = f'Based on the contents of the file, can you identify the main topic of the questions and answers? The main topic should be a single word, and should be strictly either Agile or DevOps. Identify also, only 5 subtopics that are related to the main topic. The subtopics should be single words as well. \n\n Skip the pleasantries of acknowledging the user and start generating the topic immediately (Meaning, do not start with "Sure, here\'s the topic for..." or "Here\'s the topic for..."). Some examples of sub-topics include automation, continuous integration, continuous delivery, etc. Generate your response as follows in the example delimited by the double apostrophes: \n\n """ \n Main Topic: DevOps \n Sub-Topics: Automation, Continuous Integration, Continuous Delivery, Continuous Deployment, Continuous Testing"""'
+
+    topic_docs = knowledge_base.similarity_search(topic_query)
+    topic_output = chain.run(input_documents=topic_docs,question=topic_query)
+
     # UPLOAD CASE STUDY TO DB
-    cs_id = upload_cs_skeleton(file_id, cs_output)
+    cs_id = upload_cs_skeleton(file_id, cs_output, topic_output)
 
     # GENERATE QUESTIONS AND ANSWERS
     ques_cs_query = f'Based on the case study below, can you create 10 questions about the case study? Phrase them in a way where it will require more critical thinking. \n\n Case Study: {cs_output} \n\n Skip the pleasantries of acknowledging the user and start generating the questions immediately (Meaning, do not start with \'Sure, here\'s a questions for...\')'
@@ -222,11 +299,17 @@ def upload_csqa():
     a_docs = knowledge_base.similarity_search(a_query)
     a_output = chain.run(input_documents=a_docs,question=a_query)
 
+    topic_split = topic_output.split("\n")
+    main_topic = topic_split[0].split(":")[1].strip()
+    sub_topics = topic_split[1].split(":")[1].strip()
+
     # UPLOAD RELATED QUESTIONS AND ANSWERS TO DB
     mongo_upload_endpoint = "http://localhost:5001/upload_csqa_for_pdf" + "/" + cs_id
     qa_json = {
         "questions": q_output,
-        "answers": a_output
+        "answers": a_output,
+        "main_topic": main_topic,
+        "sub_topic": sub_topics
     }
     try:
         response = requests.post(mongo_upload_endpoint, json=qa_json)
@@ -237,6 +320,23 @@ def upload_csqa():
 
     return render_template('interface_post_upload_csqa.html', cs_output=cs_output, q_output=q_output, a_output=a_output)
 
+##################################################################################################################################################################################################
+##################################################################################################################################################################################################
+##################################################################################################################################################################################################
+'''
+FUNCTIONS HERE ARE TO BE USED FOR API CALLS FROM OTHER SOURCES SUCH AS POSTMAN OR OTHER INTERFACES
+
+FUNCTIONS IN THIS SECTION INCLUDE:
+
+- CASE STUDY
+    - GENERATE CASE STUDY (api_get_cs)
+
+- INDEPENDENT QUESTIONS AND ANSWERS
+    - GENERATE QUESTIONS AND ANSWERS (api_get_qa)
+
+- CASE STUDY QUESTIONS AND ANSWERS
+    - GENERATE CASE STUDY + RELATED QUESTIONS AND ANSWERS (api_get_csqa)
+'''
 
 # API ROUTES FOR OTHER APPLICATIONS TO CALL AND USE 
 

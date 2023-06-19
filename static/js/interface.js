@@ -75,3 +75,4 @@ function toggle_mode() {
 }
 
 toggle_button.addEventListener("click", toggle_mode);
+
